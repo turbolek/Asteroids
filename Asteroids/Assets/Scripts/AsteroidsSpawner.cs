@@ -60,4 +60,11 @@ public class AsteroidsSpawner
         }
         return asteroids;
     }
+
+    public void SpawnAsteroidAtRandomPosition()
+    {
+        Vector2 randomTilePosition = tileCenterPositions[Random.Range(0, tileCenterPositions.Length - 1)];
+        Asteroid asteroid = asteroidsPool.GetAsteroid(randomTilePosition);
+        asteroid.Init(randomTilePosition);
+    }
 }

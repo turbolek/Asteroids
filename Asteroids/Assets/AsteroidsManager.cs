@@ -13,17 +13,27 @@ public class AsteroidsManager : MonoBehaviour
     private int asteroidGridSizeY;
     [SerializeField]
     private float asteroidGridTileSize;
+    [SerializeField]
+    private float asteroidRespawnTime;
 
     private Asteroid[] asteroids;
     private bool initialized = false;
+    private List<float> respawnTimes;
+    private AsteroidsSpawner asteroidsSpawner;
 
     public void Init()
     {
+        Asteroid.AsteroidDestroyed += OnAsteroidDestroyed;
+
         AsteroidsObjectPool asteroidsObjectPool = new AsteroidsObjectPool();
+        asteroidsSpawner = new AsteroidsSpawner(asteroidsObjectPool, asteroidGridSizeX, asteroidGridSizeY, asteroidGridTileSize);
+        respawnTimes = new List<float>();
+
         int asteroidsNumber = asteroidGridSizeX * asteroidGridSizeY;
         asteroidsObjectPool.Init(asteroidPrefab, asteroidsNumber, asteroidsNumber, null);
-        AsteroidsSpawner asteroidsSpawner = new AsteroidsSpawner(asteroidsObjectPool, asteroidGridSizeX, asteroidGridSizeY, asteroidGridTileSize);
         asteroids = asteroidsSpawner.SpawnAllAsteroids();
+        StartCoroutine(AsteroidRespawnCoroutine());
+
         initialized = true;
     }
 
@@ -43,4 +53,21 @@ public class AsteroidsManager : MonoBehaviour
         }
     }
 
+    private void OnAsteroidDestroyed(Asteroid asteroid)
+    {
+        respawnTimes.Add(Time.time + asteroidRespawnTime);
+    }
+
+    private IEnumerator AsteroidRespawnCoroutine()
+    {
+        while (true)
+        {
+            while (respawnTimes.Count > 0 && respawnTimes[0] <= Time.time)
+            {
+                asteroidsSpawner.SpawnAsteroidAtRandomPosition();
+                respawnTimes.RemoveAt(0);
+            }
+            yield return null;
+        }
+    }
 }

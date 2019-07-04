@@ -10,14 +10,19 @@ public class Asteroid : MonoBehaviour
     private Movement movement;
     private IMovementDirectionHandler movementDirectionHandler;
     Vector2 movementDirection;
+    private bool initialized = false;
 
     public static event System.Action<Asteroid> AsteroidDestroyed;
 
     public void Init(Vector2 initialPosition)
     {
-        movementDirectionHandler = new AsteroidMovementDirectionHandler();
+        if (!initialized)
+        {
+            movementDirectionHandler = new AsteroidMovementDirectionHandler();
+            movement = GetComponent<Movement>();
+        }
+
         movementDirection = movementDirectionHandler.GetMovementDirection();
-        movement = GetComponent<Movement>();
         movement.Init(movementSpeed, initialPosition);
     }
 
@@ -25,4 +30,10 @@ public class Asteroid : MonoBehaviour
     {
         movement.MoveRigidbody(movementDirection, deltaTime);
     }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        AsteroidDestroyed(this);
+    }
+
 }
