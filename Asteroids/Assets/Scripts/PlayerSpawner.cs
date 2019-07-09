@@ -15,7 +15,7 @@ public class PlayerSpawner
         this.projectilePool = projectilePool;
     }
 
-    public void SpawnPlayer()
+    public Player SpawnPlayer()
     {
         GameObject playerGameObject = GameObject.Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
         Player player = playerGameObject.GetComponent<Player>();
@@ -28,6 +28,8 @@ public class PlayerSpawner
         {
             Debug.LogError("Player prefab has to have Player component");
         }
+
+        return player;
     }
 
 }

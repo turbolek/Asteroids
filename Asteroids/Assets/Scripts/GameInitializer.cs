@@ -23,6 +23,10 @@ public class GameInitializer : MonoBehaviour
     [Header("Asteroid Settings")]
     [SerializeField] AsteroidsManager asteroidManager;
 
+    [Header("Camera Settings")]
+    [SerializeField]
+    private Camera camera;
+
     private PlayerSpawner playerSpawner;
 
     List<string> list = new List<string>();
@@ -40,7 +44,11 @@ public class GameInitializer : MonoBehaviour
         projectileManager.Init();
         asteroidManager.Init();
 
+
         playerSpawner = new PlayerSpawner(playerPrefab, playerSpawnPosition, projectileObjectPool);
-        playerSpawner.SpawnPlayer();
+        Player player = playerSpawner.SpawnPlayer();
+
+        CameraMovement cameraMovement = camera.GetComponent<CameraMovement>();
+        cameraMovement.Init(player.transform);
     }
 }
